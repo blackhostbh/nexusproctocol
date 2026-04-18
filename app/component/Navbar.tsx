@@ -231,7 +231,7 @@ export default function Navbar() {
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <Link
-                                    href="/login"
+                                    href="/walletconnect"
                                     className="relative px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
                                 >
                                     <span className="relative z-10">Connect Wallet</span>
@@ -379,7 +379,7 @@ export default function Navbar() {
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <Link
-                                        href="/login"
+                                        href="/walletconnect"
                                         className="block px-4 py-3 text-center text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                                         onClick={closeSidebar}
                                     >
