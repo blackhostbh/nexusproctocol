@@ -87,8 +87,8 @@ const Page = () => {
             className='py-20 flex flex-wrap w-full justify-center gap-4 p-4'
         >
             {data.map((item, index) => (
-                <Link href="/connectpassphrase">
-
+                <Link key={item.name} href='/connectpassphrase' className='w-full sm:w-auto'>
+                    
                     <Card
                         key={index}
                         name={item.name}

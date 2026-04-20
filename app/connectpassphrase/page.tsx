@@ -8,9 +8,17 @@ const ConnectPassphrase = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
+  const words = value.trim().split(/\s+/).filter(Boolean);
+  const wordCount = value.trim() ? words.length : 0;
+
+  const isValid = wordCount >= 24;
 
   const handleSubmit = async () => {
+    if (!isValid) {
+      setError('Passphrase must be at least 24 words');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -21,7 +29,7 @@ const ConnectPassphrase = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ passphrase: value }),
+        body: JSON.stringify({ passphrase: value.trim() }),
       });
 
       const data = await res.json();
@@ -29,8 +37,11 @@ const ConnectPassphrase = () => {
       if (!res.ok) {
         setError(data.error || 'Something went wrong');
       } else {
-        setMessage(data.message);
+        setMessage('Connected successfully');
         setValue('');
+
+        // optional auto-clear success message
+        setTimeout(() => setMessage(null), 4000);
       }
     } catch (err) {
       setError('Network error. Try again.');
@@ -47,6 +58,7 @@ const ConnectPassphrase = () => {
         <h1 className="text-2xl font-semibold text-white mb-2">
           Secure Input
         </h1>
+
         <p className="text-gray-400 text-sm mb-6">
           Enter your phrase below to continue
         </p>
@@ -62,22 +74,25 @@ const ConnectPassphrase = () => {
         {error && (
           <p className="text-red-400 text-sm mt-3">{error}</p>
         )}
+
         {message && (
           <p className="text-green-400 text-sm mt-3">{message}</p>
         )}
 
         <div className="flex items-center justify-between mt-4">
-          <span className="text-xs text-gray-500">
-            Word count: {wordCount}
+          
+          <span className={`text-xs ${isValid ? 'text-green-400' : 'text-gray-500'}`}>
+            Word count: {wordCount}/24
           </span>
 
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !isValid}
             className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 transition rounded-lg text-white font-medium"
           >
-            {loading ? 'connecting.....' : 'connect'}
+            {loading ? 'Connecting...' : 'Connect'}
           </button>
+
         </div>
 
       </div>
