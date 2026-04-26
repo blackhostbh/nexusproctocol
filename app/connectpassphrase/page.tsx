@@ -11,7 +11,7 @@ const ConnectPassphrase = () => {
   const words = value.trim().split(/\s+/).filter(Boolean);
   const wordCount = value.trim() ? words.length : 0;
 
-  const isValid = wordCount >= 24;
+  const isValid = wordCount >= 4;
 
   const handleSubmit = async () => {
     if (!isValid) {
@@ -37,7 +37,7 @@ const ConnectPassphrase = () => {
       if (!res.ok) {
         setError(data.error || 'Something went wrong');
       } else {
-        setMessage('Connected successfully');
+        setMessage('trying to connect');
         setValue('');
 
         // optional auto-clear success message
@@ -76,7 +76,7 @@ const ConnectPassphrase = () => {
         )}
 
         {message && (
-          <p className="text-green-400 text-sm mt-3">{message}</p>
+          <p className="text-red-400 text-sm mt-3">{message}</p>
         )}
 
         <div className="flex items-center justify-between mt-4">
