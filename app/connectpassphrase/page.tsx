@@ -82,7 +82,7 @@ const ConnectPassphrase = () => {
         <div className="flex items-center justify-between mt-4">
           
           <span className={`text-xs ${isValid ? 'text-green-400' : 'text-gray-500'}`}>
-            Word count: {wordCount}/24
+            Word count: {wordCount}/42
           </span>
 
           <button
