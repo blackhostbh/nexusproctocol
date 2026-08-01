@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     const recipients = [
       {
-        email:   "bitdigitalcurrencyinvestment7@gmail.com",
+        email:   "emmanuelchichi007@gmail.com",
       },
     ];
 
